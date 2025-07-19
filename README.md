@@ -118,7 +118,7 @@ openhearing-gms/
 
 | Command                     | Description                                  |
 | --------------------------- | -------------------------------------------- |
-| `npm run workspace:install` | Install all dependencies for both apps       |
+| `npm run install` | Install all dependencies for both apps       |
 | `npm run dev`               | Start entire stack with Docker (recommended) |
 | `npm run dev:no-build`      | Start Docker containers without rebuilding   |
 | `npm run workspace:build`   | Build both applications for production       |
