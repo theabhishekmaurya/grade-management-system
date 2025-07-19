@@ -1,0 +1,63 @@
+{
+  "name": "openhearing-grade-management-system",
+  "version": "1.0.0",
+  "description": "A mono-repo for grade management system with Next.js frontend and Nest.js backend",
+  "private": true,
+  "workspaces": [
+    "apps/frontend",
+    "apps/backend"
+  ],
+  "scripts": {
+    "workspace:install": "npm install",
+    "dev": "docker-compose up --build --force-recreate",
+    "dev:no-build": "docker-compose up",
+    "workspace:build": "npm run build:backend && npm run build:frontend",
+    "workspace:start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "dev:frontend": "npm run dev --workspace=apps/frontend",
+    "dev:backend": "npm run start:dev --workspace=apps/backend",
+    "build:frontend": "npm run build --workspace=apps/frontend",
+    "build:backend": "npm run build --workspace=apps/backend",
+    "start:frontend": "npm run start --workspace=apps/frontend",
+    "start:backend": "npm run start:prod --workspace=apps/backend",
+    "lint": "npm run lint --workspaces",
+    "lint:fix": "npm run lint:fix --workspaces",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:build": "docker-compose build",
+    "docker:login": "docker login",
+    "docker:pull": "docker pull node:18-alpine",
+    "docker:clean": "docker system prune -a",
+    "docker:debug": "docker-compose --verbose up --build",
+    "docker:fix-permissions": "sudo chown -R $USER:staff ~/.docker",
+    "docker:fix-permissions:linux": "sudo chown -R $USER:$USER ~/.docker",
+    "docker:reset-buildx": "sudo rm -rf ~/.docker/buildx && docker buildx create --use",
+    "docker:network-inspect": "docker network inspect openhearing-network",
+    "docker:ping-postgres": "docker exec openhearing-backend ping -c 4 postgres",
+    "docker:list-containers": "docker ps --format 'table {{.Names}}\\t{{.Status}}\\t{{.Networks}}'",
+    "docker:restart": "docker-compose down && docker-compose up -d"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.12.0",
+    "@typescript-eslint/parser": "^6.12.0",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.54.0",
+    "prettier": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "dependencies": {
+    "@radix-ui/react-dialog": "^1.1.14",
+    "@radix-ui/react-icons": "^1.3.2",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-toast": "^1.2.14",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.525.0",
+    "sonner": "^2.0.6",
+    "tailwind-merge": "^3.3.1"
+  }
+}

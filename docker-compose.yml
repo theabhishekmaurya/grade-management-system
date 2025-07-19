@@ -1,0 +1,83 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    restart: always
+    container_name: openhearing-postgres
+    environment:
+      POSTGRES_DB: grade_management
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d grade_management']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    hostname: postgres
+    networks:
+      openhearing-network:
+        aliases:
+          - postgres
+          - db
+
+  # Backend Service (Nest.js)
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    container_name: openhearing-backend
+    environment:
+      NODE_ENV: development
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: grade_management
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: postgres
+      # Add DB logging configuration
+      DB_LOGGING: 'error' # Options: 'true', 'all', 'error', 'false'
+    ports:
+      - '3001:3001'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./apps/backend:/app
+      - /app/node_modules
+    networks:
+      - openhearing-network
+
+  # Frontend Service (Next.js)
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile
+    container_name: openhearing-frontend
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+      # Enable Fast Refresh and file watching
+      FAST_REFRESH: 'true'
+      WATCHPACK_POLLING: 'true'
+    ports:
+      - '3003:3003'
+    depends_on:
+      - backend
+    # Add volume mounts for Hot Module Replacement
+    volumes:
+      - ./apps/frontend:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - openhearing-network
+
+volumes:
+  postgres_data:
+
+networks:
+  openhearing-network:
+    driver: bridge
